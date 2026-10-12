@@ -27,6 +27,6 @@ Tested on the cloud Linux machine with Python 3.12.14, FFmpeg/ffprobe 7.1.5, pin
 - Windows Setup/Launch/Doctor/Narrate/Firewall and your Averbakh.pgn were not available here. Follow README's three-action first run, then switch games_dir. Local Windows TTS is optional and untested here.
 - SMTP notification node imported but was disabled and not sent. Scheduled unattended activation/error-trigger notifications need your n8n configuration; manual factory execution was tested.
 - NVENC acceleration and automatic thumbnail upload are not implemented. CPU renderer is verified. Thumbnail is an optional generated review artifact, not a guaranteed YouTube Shorts cover.
-- No public/automatic publication, new cloud snapshot publication, or fresh-task restoration was performed. Code is in this local checkout and downloadable archive; it has not been pushed to GitHub.
+- No public/automatic publication, new cloud snapshot publication, or fresh-task restoration was performed. Code is in the local checkout and downloadable archive, and was subsequently pushed to the chess-shorts-factory branch of karti-tech/Chess for GitHub delivery.
 
 The deliverable is a tested first end-to-end release with original procedural visuals/audio and a review queue. Windows connectivity and credential-backed publishing remain installation/integration steps, so the full laptop definition of done cannot yet be claimed.
