@@ -1,0 +1,13 @@
+{
+  "valid": true,
+  "width": 720,
+  "height": 1280,
+  "fps": 30.0,
+  "duration": 30.0,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "audio_rms": 0.1541067212820053,
+  "decode": "passed",
+  "faststart": true,
+  "black_frames": "none"
+}

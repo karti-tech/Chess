@@ -1,0 +1,67 @@
+{
+  "headers": {
+    "Event": "Locally constructed legal demonstration",
+    "Site": "Local",
+    "Date": "????.??.??",
+    "Round": "?",
+    "White": "Demo White",
+    "Black": "Demo Black",
+    "Result": "1-0",
+    "Source": "Original demonstration move sequence; not a tournament game"
+  },
+  "source_file": "sample.pgn",
+  "source_index": 1,
+  "game_hash": "ad76e9eb52d2d507b62db1de5db55a7409fa30abc006280e5fbbe20d2e24bba4",
+  "start_ply": 0,
+  "end_ply": 7,
+  "initial_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "moves": [
+    "e2e4",
+    "e7e5",
+    "f1c4",
+    "b8c6",
+    "d1h5",
+    "g8f6",
+    "h5f7"
+  ],
+  "san": [
+    "e4",
+    "e5",
+    "Bc4",
+    "Nc6",
+    "Qh5",
+    "Nf6",
+    "Qxf7#"
+  ],
+  "evaluations_cp_white": [],
+  "script": {
+    "hook": "ONE BOARD. ZERO CHILL.",
+    "captions": [
+      "Small move. Big main-character energy.",
+      "The plot is loading...",
+      "Another square. Another problem.",
+      "Act casual. It is still chess.",
+      "Queen to h5. New square, new attitude.",
+      "Knight to f6. New square, new attitude.",
+      "CHECKMATE. The king has left the chat."
+    ],
+    "payoff": "CHECKMATE",
+    "title": "Royal panic on the board | Qxf7# #Shorts",
+    "description": "Demo White vs Demo Black. Legal game from sample.pgn, plies 1-7.\nRecorded result: 1-0. Event: Locally constructed legal demonstration.\nOriginal animated editing, captions and locally synthesized soundtrack. Jokes are commentary, not engine evaluations.\n#Chess #Shorts",
+    "tags": [
+      "chess",
+      "shorts",
+      "chess humor"
+    ],
+    "category_id": "20",
+    "writer": "local"
+  },
+  "rights_note": "Local PGN supplied by user; confirm source terms before publishing. Demo PGN is an original legal demonstration.",
+  "assets": {
+    "pieces": "Original procedural silhouettes, project MIT license",
+    "music": "Original locally synthesized composition, project MIT license",
+    "sfx": "Original synthesized sounds, project MIT license",
+    "font": "System font used locally; not bundled",
+    "narration": "None"
+  }
+}

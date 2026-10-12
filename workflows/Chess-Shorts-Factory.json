@@ -1,0 +1,292 @@
+{
+  "name": "Chess Shorts Factory",
+  "nodes": [
+    {
+      "id": "6660b8ce-fd4b-435d-9c68-9a0655c12d2a",
+      "name": "Manual Test",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "609c500c-35c2-4562-bd85-833ba4275477",
+      "name": "Daily Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "disabled": true
+    },
+    {
+      "id": "9ce27a0e-fa5c-4502-bb5b-225a23bd13dc",
+      "name": "Configuration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        80
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{request_key:'n8n-'+$execution.id,target_seconds:30,style:'meme_chaos',width:720,height:1280,dry_run:true}}];"
+      }
+    },
+    {
+      "id": "5c5762a5-d32f-46b4-88ac-ca68b9732c44",
+      "name": "Create Render Job",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        80
+      ],
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 15000
+        },
+        "method": "POST",
+        "url": "http://host.docker.internal:8765/jobs",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "89b2a0fc-4144-41ef-b0f6-290e209ac0b7",
+      "name": "Poll Job",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        80
+      ],
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 15000
+        },
+        "url": "=http://host.docker.internal:8765/jobs/{{$json.id}}"
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "2860d378-09ca-47c7-9507-7f21bdfa819c",
+      "name": "Check Status And Deadline",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        80
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const j=$json;\nif (!j.id || !j.created) throw new Error('Renderer returned invalid job status');\nif (j.status==='failed') throw new Error('Render failed: '+j.error+' (job '+j.id+')');\nif (Date.now()-Date.parse(j.created)>45*60*1000) throw new Error('Render polling exceeded 45 minutes; check job '+j.id+' before submitting another request');\nif (j.status==='succeeded' && !j.result?.validation?.valid) throw new Error('Renderer output validation failed');\nif (!['queued','running','succeeded'].includes(j.status)) throw new Error('Unknown job status');\nreturn {json:j};"
+      }
+    },
+    {
+      "id": "6b2289ec-3a05-477a-9ce2-aff6f3addc62",
+      "name": "Finished?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "32269a3f-7fd9-42e5-9a60-5b3ba60f1fb6",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "succeeded",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "eee35f7a-c304-4243-99ba-d9c16f2fe835",
+      "name": "Wait 15 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        300
+      ],
+      "parameters": {
+        "amount": 15,
+        "unit": "seconds"
+      },
+      "webhookId": "d79e9f73-e6c0-4b3f-9698-5c62bc93fd66"
+    },
+    {
+      "id": "efc065b8-c509-404c-bbea-7161b5425d68",
+      "name": "Review Queue And Success Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return $input.all().map(i=>({json:{job_id:i.json.id,status:'review_required',title:i.json.result.title,description:i.json.result.description,video_path_on_windows:i.json.result.video,validation:i.json.result.validation,metadata_path:i.json.result.metadata,dry_run:i.json.result.dry_run,upload:'Disabled. Review video and use the separate publish workflow.'}}));"
+      }
+    },
+    {
+      "id": "1d6918b6-35dc-4c99-977f-55c45a1ba024",
+      "name": "Read Me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        450
+      ],
+      "parameters": {
+        "content": "## First manual run\n1. Start Windows service.\n2. Set Header Auth credential on BOTH HTTP nodes: X-Chess-Token = token from .env.\n3. Run Manual Test. dry_run=true permits repeated previews and prohibits upload.\n\nAfter review, change dry_run=false; enable Daily Schedule at your preferred local hour. Set workflow timezone in Settings. Metadata, validation and logs are produced by the service. Do not retry with a new key while an existing render is running.\n\nPublishing is a separate manual review workflow; there is no automatic public upload.",
+        "height": 400,
+        "width": 540
+      }
+    }
+  ],
+  "connections": {
+    "Manual Test": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Schedule": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Create Render Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Render Job": {
+      "main": [
+        [
+          {
+            "node": "Poll Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Job": {
+      "main": [
+        [
+          {
+            "node": "Check Status And Deadline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status And Deadline": {
+      "main": [
+        [
+          {
+            "node": "Finished?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 15 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Poll Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finished?": {
+      "main": [
+        [
+          {
+            "node": "Review Queue And Success Log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 15 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 3000
+  },
+  "pinData": {},
+  "tags": []
+}

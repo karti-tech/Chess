@@ -1,0 +1,96 @@
+{
+  "name": "Chess Shorts Error Handler",
+  "nodes": [
+    {
+      "id": "180f865b-6dbc-443d-a2ba-cdf989d2e984",
+      "name": "Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "1bef5897-759b-4b1f-b697-369d0f550905",
+      "name": "Error Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const e=$input.first().json; return [{json:{status:'failed',workflow:e.workflow?.name,execution_id:e.execution?.id,message:e.execution?.error?.message || e.trigger?.error?.message || 'Unknown error',action:'Inspect n8n execution and renderer logs. Do not create a new upload while outcome is uncertain.'}}];"
+      }
+    },
+    {
+      "id": "f8a5ab18-d6b3-47d4-8b92-771b3da5f349",
+      "name": "Optional Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "fromEmail": "CHANGE_ME@example.com",
+        "toEmail": "CHANGE_ME@example.com",
+        "subject": "Chess factory failed",
+        "emailFormat": "text",
+        "text": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "disabled": true
+    },
+    {
+      "id": "4125d302-efd9-45ac-9d7e-4aedae618518",
+      "name": "Error Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        220
+      ],
+      "parameters": {
+        "content": "Import this workflow, save it, and select it as Error Workflow in the factory/publish workflow Settings. Error Trigger fires for automatic executions; manual errors appear directly in the editor. Optional Email stays disabled until you configure SMTP credentials and your actual addresses. SQLite and local logs exist independently of email.",
+        "height": 220,
+        "width": 550
+      }
+    }
+  ],
+  "connections": {
+    "Workflow Error": {
+      "main": [
+        [
+          {
+            "node": "Error Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log": {
+      "main": [
+        [
+          {
+            "node": "Optional Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 3000
+  },
+  "pinData": {},
+  "tags": []
+}

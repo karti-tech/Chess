@@ -1,0 +1,147 @@
+{
+  "name": "Chess Shorts Publish Reviewed",
+  "nodes": [
+    {
+      "id": "5ea71989-b9cd-4690-b317-3388aed64894",
+      "name": "Manual Publish After Review",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "9bdf910a-b797-487c-8ba6-d4f8265d522f",
+      "name": "Reviewed Job Configuration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{job_id:'REPLACE_WITH_REVIEWED_JOB_ID',approved:false}}];"
+      }
+    },
+    {
+      "id": "da03104b-f6cd-4460-8841-e78a9f62d32c",
+      "name": "Require Explicit Approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const j=$input.first().json; if(!j.approved || j.job_id.startsWith('REPLACE')) throw new Error('Review the MP4, enter job_id, and set approved=true. Dry-run jobs cannot publish.'); return [{json:j}];"
+      }
+    },
+    {
+      "id": "30758de1-9952-4eb2-a462-192f5135b5af",
+      "name": "Official YouTube Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 1800000
+        },
+        "method": "POST",
+        "url": "=http://host.docker.internal:8765/jobs/{{$json.job_id}}/publish",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"approved\":true}"
+      }
+    },
+    {
+      "id": "1814ccec-d857-4b19-a386-671514bd955f",
+      "name": "Confirmed Upload Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const j=$input.first().json; if(!j.video_id) throw new Error('No confirmed upload ID'); return [{json:j}];"
+      }
+    },
+    {
+      "id": "389b6593-b440-4cfc-804b-f5e7bf579033",
+      "name": "Publishing Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        100,
+        220
+      ],
+      "parameters": {
+        "content": "## Optional official YouTube publishing\nAuthorize on your own PC using scripts/youtube_auth.py. Set the same Header Auth credential on the HTTP node. Default privacy is private. Never enable node-level retries for this upload POST: service blocks uncertain results; inspect YouTube Studio first.\n\nFirst test must be private/unlisted. To later publish publicly, config needs allow_public=true and private_test_video_id from a confirmed prior private/unlisted upload. Every job still requires review.\n\nAPI quota and unverified-project restrictions apply. This workflow was built without your channel credentials.",
+        "height": 320,
+        "width": 680
+      }
+    }
+  ],
+  "connections": {
+    "Manual Publish After Review": {
+      "main": [
+        [
+          {
+            "node": "Reviewed Job Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reviewed Job Configuration": {
+      "main": [
+        [
+          {
+            "node": "Require Explicit Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Require Explicit Approval": {
+      "main": [
+        [
+          {
+            "node": "Official YouTube Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Official YouTube Upload": {
+      "main": [
+        [
+          {
+            "node": "Confirmed Upload Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 3000
+  },
+  "pinData": {},
+  "tags": []
+}

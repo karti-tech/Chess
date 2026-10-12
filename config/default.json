@@ -1,0 +1,15 @@
+{
+  "games_dir": "games", "output_dir": "output", "data_dir": "data", "logs_dir": "logs",
+  "width": 1080, "height": 1920, "fps": 30, "target_seconds": 30,
+  "min_seconds": 15, "max_seconds": 60, "style": "meme_chaos", "orientation": "white",
+  "brand": "CHESS AFTER HOURS", "music_volume": 0.22, "sfx_volume": 0.5,
+  "min_plies": 6, "max_excerpt_plies": 14, "min_free_gb": 1,
+  "engine_path": "", "engine_seconds": 0.08, "engine_threads": 2,
+  "ai_provider": "local", "ai_model": "gpt-4.1-mini",
+  "host": "127.0.0.1", "port": 8765, "output_prefix": "chess",
+  "upload_privacy": "private", "allow_public": false, "private_test_video_id": "",
+  "schedule_hour": 18, "debug": false, "retention_days": 7,
+  "ffmpeg": "ffmpeg", "ffprobe": "ffprobe", "encoder": "libx264",
+  "music_file": "", "music_license": "", "tts_file": "", "tts_license": "",
+  "font_path": "", "seed": 42
+}

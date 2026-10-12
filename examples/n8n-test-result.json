@@ -1,0 +1,35 @@
+{
+  "n8n_version": "2.37.10",
+  "status": "success",
+  "node_execution_counts": {
+    "Manual Test": 1,
+    "Configuration": 1,
+    "Create Render Job": 1,
+    "Poll Job": 3,
+    "Check Status And Deadline": 3,
+    "Finished?": 3,
+    "Wait 15 Seconds": 2,
+    "Review Queue And Success Log": 1
+  },
+  "result": {
+    "job_id": "ec35526b-0c1e-4e30-8083-6d897fb8b547",
+    "status": "review_required",
+    "title": "Royal panic on the board | Qxf7# #Shorts",
+    "description": "Demo White vs Demo Black. Legal game from sample.pgn, plies 1-7.\nRecorded result: 1-0. Event: Locally constructed legal demonstration.\nOriginal animated editing, captions and locally synthesized soundtrack. Jokes are commentary, not engine evaluations.\n#Chess #Shorts",
+    "validation": {
+      "valid": true,
+      "width": 720,
+      "height": 1280,
+      "fps": 30,
+      "duration": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "audio_rms": 0.1541067212820053,
+      "decode": "passed",
+      "faststart": true,
+      "black_frames": "none"
+    },
+    "dry_run": true,
+    "upload": "Disabled. Review video and use the separate publish workflow."
+  }
+}
